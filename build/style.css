@@ -1,0 +1,19 @@
+body, div, span, object, input, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, tt, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hr { padding: 0; margin: 0; } 
+table { border-collapse: collapse; border-spacing: 0; } 
+caption{ text-align:left;} 
+input,select{ vertical-align:middle;} 
+input,textarea,select{ font:12px Arial, Helvetica, sans-serif; } 
+fieldset, img { border: 0; } 
+/*address,code,caption,th,cite,dfn,em,var{font-style:normal;} */
+ol, ul { list-style: none; } 
+h1, h2, h3, h4, h5, h6 { font-size: 100%; } 
+q:before, q:after { content:""; } 
+legend{ display:none;} 
+a{text-decoration: none;}
+
+/* float */
+.clearfix:after{ content:""; height:0; visibility:hidden; display:block; clear:both;}
+.clearfix{ zoom:1;}
+.clear { clear:both;}
+
+h3{color:yellow;}

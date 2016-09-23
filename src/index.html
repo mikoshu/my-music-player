@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>player</title>
+	<link rel="stylesheet" href="build/style.css">
+</head>
+<body id="app">
+	<div class="top-bar">
+		<h1>我的音乐播放器</h1>
+		<form action="" class="search-box">
+			<input type="text" placeholder="搜音乐，歌手，歌词..." >
+		</form>
+		<a href="javascript:;" class="reload" v-on:click="reload" >
+			<img src="images/icon-refresh.png" alt="">
+		</a>
+		<div class="handle-box fr">
+			<a class="min" v-on:click="minimize" href="javascript:;"></a>
+			<a class="max" v-on:click="maximize" href="javascript:;"></a>
+			<a class="close" v-on:click="close" href="javascript:;"></a>
+		</div>
+	</div>
+	<div class="main clearfix">
+		<div class="side-bar">
+			<dl>
+				<dt>推荐</dt>
+				<dd v-on:click="toLocation" class="active"><ins class="icon-music"></ins>本地音乐</dd>
+				<dd v-on:click="toFavorite"><ins class="icon-heart"></ins>我喜欢的音乐</dd>
+				<dd><ins class="icon-history"></ins>最近播放</dd>
+			</dl>
+			<div class="msg-box">
+				<img src="images/img-music.png" class="fl" alt="">
+				<div class="fl">
+					<h3>{{currentSong}}</h3>
+					<p>{{singer}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="content">
+			<component :is="tab" :current-song.sync="currentSong" :current-link.sync="currentLink" :singer.sync="singer" :play-list.sync="playList" :current-index.sync="currentIndex" keep-alive transition="fade" transition-mode="out-in"  ></component>
+		</div>
+		<div class="footer">
+			<div class="btn-box clearfix fl">
+				<a href="javascript:;" v-on:click="pre" class="btn-last"></a>
+				<a href="javascript:;" v-bind:class="[isPlay ? 'btn-pause' : 'btn-play' ]" v-on:click="togglePlay" ></a>
+				<a href="javascript:;" v-on:click="next" class="btn-next"></a>
+			</div>
+			<div class="audio-box fl">
+				<audio v-el:audio v-bind:src="currentLink" v-on:ended="next" controls="controls"></audio>
+			</div>
+		</div>
+	</div>
+
+	<script src="build/build.js"></script>
+</body>
+</html>
