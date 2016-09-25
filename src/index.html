@@ -8,8 +8,8 @@
 <body id="app">
 	<div class="top-bar">
 		<h1>我的音乐播放器</h1>
-		<form action="" class="search-box">
-			<input type="text" placeholder="搜音乐，歌手，歌词..." >
+		<form action="#" class="search-box" v-on:submit.prevent="search" >
+			<input type="text" v-el:input placeholder="搜音乐，歌手，歌词..." >
 		</form>
 		<a href="javascript:;" class="reload" v-on:click="reload" >
 			<img src="images/icon-refresh.png" alt="">
@@ -24,8 +24,12 @@
 		<div class="side-bar">
 			<dl>
 				<dt>推荐</dt>
-				<dd v-on:click="toLocation" class="active"><ins class="icon-music"></ins>本地音乐</dd>
-				<dd v-on:click="toFavorite"><ins class="icon-heart"></ins>我喜欢的音乐</dd>
+				<dd v-on:click="toLocation" v-bind:class='[tab == "location" ? "active" : "" ]'>
+					<ins class="icon-music"></ins>本地音乐
+				</dd>
+				<dd v-on:click="toFavorite" v-bind:class='[tab == "myFavorite" ? "active" : "" ]'>
+					<ins class="icon-heart"></ins>我喜欢的音乐
+				</dd>
 				<dd><ins class="icon-history"></ins>最近播放</dd>
 			</dl>
 			<div class="msg-box">
@@ -37,7 +41,7 @@
 			</div>
 		</div>
 		<div class="content">
-			<component :is="tab" :current-song.sync="currentSong" :current-link.sync="currentLink" :singer.sync="singer" :play-list.sync="playList" :current-index.sync="currentIndex" keep-alive transition="fade" transition-mode="out-in"  ></component>
+			<component :is="tab" :current-song.sync="currentSong" :current-link.sync="currentLink" :singer.sync="singer" :play-list.sync="playList" :current-index.sync="currentIndex" :query="query" keep-alive transition="fade" transition-mode="out-in"  ></component>
 		</div>
 		<div class="footer">
 			<div class="btn-box clearfix fl">

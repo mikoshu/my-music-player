@@ -2,6 +2,7 @@ import Vue from 'vue';
 import location from './components/location.vue';
 import css from './css/style.scss';
 import myFavorite from './components/myFavorite.vue';
+import search from './components/searchResult.vue';
 
 
 var app  = new Vue({
@@ -16,7 +17,8 @@ var app  = new Vue({
 		currentLink: '',
 		singer:'',
 		currentIndex:-1,
-		isMax: false
+		isMax: false,
+		query: ''
 	},
 	methods:{
 		togglePlay: function(){
@@ -83,22 +85,24 @@ var app  = new Vue({
 		},
 		toFavorite: function(){
 			this.tab = 'myFavorite';
+		},
+		search: function(){ // 搜索歌曲
+			this.query = this.$els.input.value;
+			this.tab = 'search';
 		}
 	},
 	watch: {
 		currentSong: function(){
 			this.$els.audio.play();
 			this.isPlay = true;
-			this.$els.audio.onened = function(){
-				console.log("结束")
-			}
 		}
 	},
 	components:{
 		'location': location,
-		'myFavorite': myFavorite
+		'myFavorite': myFavorite,
+		'search': search
 	},
 	compiled: function(){
-		
+
 	}
 })

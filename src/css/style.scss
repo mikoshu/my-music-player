@@ -152,8 +152,12 @@ $color-r:#c62f2f;
 			color:#000;
 			padding-left:41px;
 			border-left:4px solid $color-r;
+			ins{
+				margin-left:-4px;
+			}
 		}
 		.icon-music{
+			left:18px;
 			background:url(/images/icon-music.png) no-repeat;
 		}
 		.icon-heart{

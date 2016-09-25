@@ -66,14 +66,14 @@
 
 <template>
 	<div class="location">
-		<div v-if="hide" >
+		<div v-show="hide" >
 			<dl>
 				<dd><a v-on:click="chooseFolder" href="javascript:;"><img src="/images/folder.png" alt=""></a></dd>
 				<dt>还木有载入本地文件哦！<a v-on:click="chooseFolder" href="javascript:;">点击此处</a> 选择文件夹载入！</dt>
 			</dl>
 			<input type="file" class="hide" v-on:change="choosed" v-el:file nwdirectory >
 		</div>
-		<div v-if="!hide">
+		<div v-show="!hide">
 			<div class="loc-head">
 				<h3>本地音乐</h3>
 			</div>
@@ -85,12 +85,15 @@
 					<th>专辑</th>
 					<th>大小</th>
 				</tr>
-				<tr v-for="(index,val) in musicList" >
+				<tr v-show="hasMusic" v-for="(index,val) in musicList" >
 					<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{index+1}}</td>
 					<td><a href="javascript:;" v-bind:class='[index == currentIndex ? "weight" : ""]' data-index="{{index}}" data-link="{{val.link}}" data-singer="{{val.singer}}" v-on:click="play">{{val.name}}</a></td>
 					<td>{{val.singer}}</td>
 					<td>{{val.ep}}</td>
 					<td>{{val.size}}</td>
+				</tr>
+				<tr v-show="!hasMusic">
+					<td colspan="5" style="text-align:center; font-size:18px;">该文件夹里木有音乐，请<a v-on:click="chooseFolder" href="javascript:;">点击此处</a>重新选择文件夹！</td>
 				</tr>
 			</table>
 		</div>
@@ -123,7 +126,8 @@
 			return {
 				musicList: [],
 				hide: true,
-				folderList: []
+				folderList: [],
+				hasMusic: false
 			};
 		},
 		methods:{
@@ -133,7 +137,7 @@
 			choosed: function(e){
 				var dirname = e.target.value;
 				if(this.folderList.length > 0){
-					folderList.forEach(function(val){
+					this.folderList.forEach(function(val){
 						if(val == dirname){
 							alert('该目录已存在，请勿重复添加');
 						}else{
@@ -144,8 +148,10 @@
 					this.folderList.push(dirname);
 				}
 				localStorage.folderList = this.folderList;
-				
-				this.readFile(dirname);
+				localStorage.folderList.split(",").forEach(function(val){
+					console.log(val)
+					this.readFile(val);
+				}.bind(this))
 			},
 			readFile: function(dirname){ // 读取路径并且递归文件夹
 				var self = this;
@@ -165,6 +171,7 @@
 									var name = basename.split("-")[1].split(".")[0];
 									var singer = basename.split("-")[0];
 									var size = (parseInt(stat.size)/1024/1024).toFixed(1) + "MB";
+									self.hasMusic = true;
 									self.musicList.push({name:name,singer:singer,link:val,size:size,ep:'未知'})
 								}
 							}
@@ -178,7 +185,7 @@
 				var name = e.target.innerHTML;
 				var singer = e.target.getAttribute('data-singer');
 				this.currentSong = name;
-				this.currentLink = link;
+				this.currentLink = link+"?xcode=fsda5f454as4fe";
 				this.singer = singer;
 				this.playList = this.musicList;
 				this.currentIndex = parseInt(e.target.getAttribute('data-index'));
@@ -196,6 +203,7 @@
 					this.readFile(val)
 				}.bind(this))
 			}
+			console.log( process.cwd() )
 		}
 	}
 </script>
