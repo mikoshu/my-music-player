@@ -3,6 +3,7 @@ import location from './components/location.vue';
 import css from './css/style.scss';
 import myFavorite from './components/myFavorite.vue';
 import search from './components/searchResult.vue';
+//import server from './server.js';
 
 
 var app  = new Vue({

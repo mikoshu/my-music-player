@@ -1,10 +1,16 @@
 var express = require('express');
 var app = express();
+var port = 33520;
 
-app.listen('8888',function(){
-	console.log('服务器开启成功！')
-})
+console.log(123)
 
-app.get('/folder',function(req,res,next){
-	
-})
+//module.exports = function(){
+	app.listen(port,function(){
+		console.log('服务器开启成功！')
+	})
+
+	app.get('localhost:'+port+'/api/',function(req,res,next){
+		var url = req.url;
+		console.log(url);
+	})
+//}
