@@ -41,7 +41,7 @@
     .location .list .playing {
       overflow: hidden;
       text-indent: -999px;
-      background: url(/images/icon-playing.png) no-repeat 10px 5px; }
+      background: url(http://demo.mikoshu.me/player/icon-playing.png) no-repeat 10px 5px; }
   .location .loc-head {
     padding: 20px 10px 5px 10px; }
     .location .loc-head h3 {
@@ -168,7 +168,7 @@ html, body {
     .top-bar .handle-box .close {
       width: 16px;
       height: 16px;
-      background: url(/images/icon-close.png) no-repeat; }
+      background: url(http://demo.mikoshu.me/player/icon-close.png) no-repeat; }
 
 .search-box {
   float: left;
@@ -186,7 +186,7 @@ html, body {
     outline: none;
     text-indent: 16px;
     color: #c77373;
-    background: url(/images/icon-search.png) center right #a82828 no-repeat; }
+    background: url(http://demo.mikoshu.me/player/icon-search.png) center right #a82828 no-repeat; }
 
 .main {
   height: 100%; }
@@ -226,14 +226,14 @@ html, body {
         margin-left: -4px; }
     .side-bar dl .icon-music {
       left: 18px;
-      background: url(/images/icon-music.png) no-repeat; }
+      background: url(http://demo.mikoshu.me/player/icon-music.png) no-repeat; }
     .side-bar dl .icon-heart {
       left: 20px;
-      background: url(/images/icon-heart.png) no-repeat; }
+      background: url(http://demo.mikoshu.me/player/icon-heart.png) no-repeat; }
     .side-bar dl .icon-history {
       left: 20px;
       top: 7px;
-      background: url(/images/icon-history.png) no-repeat; }
+      background: url(http://demo.mikoshu.me/player/icon-history.png) no-repeat; }
   .side-bar .msg-box {
     position: absolute;
     height: 74px;
@@ -288,7 +288,7 @@ html, body {
       float: left;
       width: 32px;
       height: 32px;
-      background: url(/images/icons.png) no-repeat;
+      background: url(http://demo.mikoshu.me/player/icons.png) no-repeat;
       opacity: 1;
       margin-left: 18px; }
       .footer .btn-box a:hover {

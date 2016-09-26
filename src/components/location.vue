@@ -51,7 +51,7 @@
 			.playing{
 				overflow: hidden;
 				text-indent: -999px;
-				background: url(/images/icon-playing.png) no-repeat 10px 5px ;
+				background: url(http://demo.mikoshu.me/player/icon-playing.png) no-repeat 10px 5px ;
 			}
 		}
 		.loc-head{
@@ -68,7 +68,7 @@
 	<div class="location">
 		<div v-show="hide" >
 			<dl>
-				<dd><a v-on:click="chooseFolder" href="javascript:;"><img src="/images/folder.png" alt=""></a></dd>
+				<dd><a v-on:click="chooseFolder" href="javascript:;"><img src="http://demo.mikoshu.me/player/folder.png" alt=""></a></dd>
 				<dt>还木有载入本地文件哦！<a v-on:click="chooseFolder" href="javascript:;">点击此处</a> 选择文件夹载入！</dt>
 			</dl>
 			<input type="file" class="hide" v-on:change="choosed" v-el:file nwdirectory >
