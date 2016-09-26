@@ -33,7 +33,8 @@
 				<dd><ins class="icon-history"></ins>最近播放</dd>
 			</dl>
 			<div class="msg-box">
-				<img src="images/img-music.png" class="fl" alt="">
+				<img v-if="!singerPic" src="images/img-music.png" class="fl" alt="">
+				<img v-if="singerPic" v-bind:src="singerPic" width="64" height="64" class="fl" alt="">
 				<div class="fl">
 					<h3>{{currentSong}}</h3>
 					<p>{{singer}}</p>
@@ -41,7 +42,7 @@
 			</div>
 		</div>
 		<div class="content">
-			<component :is="tab" :current-song.sync="currentSong" :current-link.sync="currentLink" :singer.sync="singer" :play-list.sync="playList" :current-index.sync="currentIndex" :query="query" keep-alive transition="fade" transition-mode="out-in"  ></component>
+			<component :is="tab" :current-song.sync="currentSong" :current-link.sync="currentLink" :singer.sync="singer" :play-list.sync="playList" :current-index.sync="currentIndex" :query="query" :singer-pic.sync="singerPic" :loop.sync="loop" keep-alive transition="fade" transition-mode="out-in"  ></component>
 		</div>
 		<div class="footer">
 			<div class="btn-box clearfix fl">
@@ -50,7 +51,7 @@
 				<a href="javascript:;" v-on:click="next" class="btn-next"></a>
 			</div>
 			<div class="audio-box fl">
-				<audio v-el:audio v-bind:src="currentLink" v-on:ended="next" controls="controls"></audio>
+				<audio v-el:audio v-bind:src="currentLink" autoplay="autoplay" v-on:ended="next" controls="controls"></audio>
 			</div>
 		</div>
 	</div>

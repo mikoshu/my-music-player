@@ -26,7 +26,6 @@
 </style>
 
 <template>
-	<!-- <audio src="http://yinyueshiting.baidu.com/data2/music/13184116/13184116.mp3?xcode=3002ab949bc13a9b4394f800f7f2550e" controls></audio> -->
 	<div class="location">
 		<div class="loc-head">
 			<h3>搜索结果</h3>
@@ -40,10 +39,10 @@
 				<th>专辑</th>
 			</tr>
 			<tr v-if="!notFounded" v-for="(index,val) in list" >
-				<td>{{index+1}}</td>
-				<td class="w60"></td>
+				<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{index+1}}</td>
+				<td class="w60" ></td>
 				<td class="max-long-200">
-					<a data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
+					<a v-bind:class='[index == currentIndex ? "weight" : ""]' data-index="{{index}}" data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
 				</td>
 				<td class="max-long-250" title="{{val.singer}}">{{{val.singer}}}</td>
 				<td class="max-long-200" title="{{val.ep}}">{{{val.ep}}}</td>
@@ -67,13 +66,23 @@
 			currentLink:{
 				type: String
 			},
+			singer:{
+				type: String
+			},
+			singerPic:{
+				type: String
+			},
+			loop:{
+				type: Boolean
+			}
 		},
 		data: function(){
 			return {
 				list:[],
 				size: 30,
 				notFounded: false,
-				page:0
+				page:0,
+				currentIndex: -1
 			}
 		},
 		methods:{
@@ -104,24 +113,29 @@
 			player: function(e){
 				var self = this;
 				var id = e.target.getAttribute("data-id");
+				this.currentIndex = e.target.getAttribute("data-index");
 				if(id == undefined){
 					id = e.target.parentNode.getAttribute("data-id")
+					this.currentIndex = e.target.parentNode.getAttribute("data-index");
 				}
-				console.log(id);
 				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.song.playAAC&songid='+id,{
 					method: 'GET'
 				}).then(function(resp){
 					return resp.json();
 				}).then(function(json){
 					var resp = json;
-					self.currentLink = resp.bitrate.file_link;
-					console.log(resp);
+					self.currentLink = 'http://localhost:8081/api/?tourl='+resp.bitrate.file_link;
+					self.currentSong = resp.songinfo.title;
+					self.singer = resp.songinfo.author;
+					self.singerPic = 'http://localhost:8081/api/?tourl='+resp.songinfo.pic_small;
+					self.loop = true;
 				})
 			}
 		},
 		watch:{
 			query: function(){
-				this.search()
+				this.search();
+				this.currentIndex = -1;
 			}
 		},
 		compiled: function(){

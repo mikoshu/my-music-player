@@ -120,6 +120,12 @@
 			},
 			currentIndex:{
 				type: Number
+			},
+			singerPic:{
+				type: String
+			},
+			loop:{
+				type: Boolean
 			}
 		},
 		data: function(){
@@ -189,6 +195,8 @@
 				this.singer = singer;
 				this.playList = this.musicList;
 				this.currentIndex = parseInt(e.target.getAttribute('data-index'));
+				this.singerPic = "";
+				this.loop = false;
 			}
 		},
 		compiled: function(){

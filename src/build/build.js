@@ -50,31 +50,134 @@
 
 	var _vue2 = _interopRequireDefault(_vue);
 
-	var _a = __webpack_require__(3);
+	var _location = __webpack_require__(2);
 
-	var _a2 = _interopRequireDefault(_a);
+	var _location2 = _interopRequireDefault(_location);
 
-	var _style = __webpack_require__(10);
+	var _style = __webpack_require__(11);
 
 	var _style2 = _interopRequireDefault(_style);
+
+	var _myFavorite = __webpack_require__(13);
+
+	var _myFavorite2 = _interopRequireDefault(_myFavorite);
+
+	var _searchResult = __webpack_require__(18);
+
+	var _searchResult2 = _interopRequireDefault(_searchResult);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var app = new _vue2.default({
 		el: '#app',
 		data: {
-			views: 'testttt'
+			views: 'testttt',
+			tab: 'location',
+			isPlay: false,
+			isCircle: false,
+			currentSong: '',
+			playList: [],
+			currentLink: '',
+			singer: '',
+			currentIndex: -1,
+			isMax: false,
+			query: '',
+			singerPic: '',
+			loop: false
+		},
+		methods: {
+			togglePlay: function togglePlay() {
+				if (this.$els.audio.getAttribute('src') == "") {
+					alert("请先选择一首音乐再播放哦~");
+					return false;
+				}
+				if (this.isPlay) {
+					this.$els.audio.pause();
+					this.isPlay = false;
+				} else {
+					this.$els.audio.play();
+					this.isPlay = true;
+				}
+			},
+			pre: function pre() {
+				var index = parseInt(this.currentIndex);
+				if (index > 0) {
+					index--;
+					this.currentIndex = index;
+					this.currentSong = this.playList[index].name;
+					this.currentLink = this.playList[index].link;
+					this.singer = this.playList[index].singer;
+				} else {
+					alert("已经是第一首歌了哦~~");
+				}
+			},
+			next: function next() {
+				var index = parseInt(this.currentIndex);
+				var len = this.playList.length - 1;
+				if (index < len) {
+					index++;
+					this.currentIndex = index;
+					this.currentSong = this.playList[index].name;
+					this.currentLink = this.playList[index].link;
+					this.singer = this.playList[index].singer;
+				} else {
+					alert("已经是最后首歌了哦~~");
+				}
+			},
+			minimize: function minimize() {
+				var win = nw.Window.get();
+				win.minimize();
+			},
+			maximize: function maximize() {
+				var win = nw.Window.get();
+				if (this.isMax) {
+					win.restore();
+					this.isMax = false;
+				} else {
+					win.maximize();
+					this.isMax = true;
+				}
+			},
+			close: function close() {
+				var win = nw.Window.get();
+				win.close();
+			},
+			reload: function reload() {
+				window.location.reload();
+			},
+			toLocation: function toLocation() {
+				this.tab = 'location';
+			},
+			toFavorite: function toFavorite() {
+				this.tab = 'myFavorite';
+			},
+			search: function search() {
+				// 搜索歌曲
+				this.query = this.$els.input.value;
+				this.tab = 'search';
+			}
+		},
+		watch: {
+			currentSong: function currentSong() {
+				this.isPlay = true;
+			},
+			loop: function loop() {
+				this.$els.audio.loop = this.loop;
+			}
 		},
 		components: {
-			'my-test': _a2.default
-		}
+			'location': _location2.default,
+			'myFavorite': _myFavorite2.default,
+			'search': _searchResult2.default
+		},
+		compiled: function compiled() {}
 	});
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	/* WEBPACK VAR INJECTION */(function(global, process) {/*!
+	/*!
 	 * Vue.js v1.0.26
 	 * (c) 2016 Evan You
 	 * Released under the MIT License.
@@ -10148,120 +10251,19 @@
 	}, 0);
 
 	module.exports = Vue;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(2)))
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
-
-	// shim for using process in browser
-
-	var process = module.exports = {};
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    if (!draining || !currentQueue) {
-	        return;
-	    }
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = setTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    clearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_script__, __vue_template__
-	__webpack_require__(4)
-	__vue_script__ = __webpack_require__(8)
+	__webpack_require__(3)
+	__vue_script__ = __webpack_require__(7)
 	if (__vue_script__ &&
 	    __vue_script__.__esModule &&
 	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] components\\a.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(9)
+	  console.warn("[vue-loader] components\\location.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(10)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) {
@@ -10271,7 +10273,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
-	  var id = "./a.vue"
+	  var id = "./location.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -10280,47 +10282,14 @@
 	})()}
 
 /***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/* 3 */
+/***/ function(module, exports) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(5);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(7)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/sass-loader/index.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./a.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/sass-loader/index.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./a.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
+	// removed by extract-text-webpack-plugin
 
 /***/ },
+/* 4 */,
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(6)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".title {\n  color: red; }\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 6 */
 /***/ function(module, exports) {
 
 	/*
@@ -10376,7 +10345,7 @@
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -10598,7 +10567,280 @@
 
 
 /***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _fs = __webpack_require__(8);
+
+	var _fs2 = _interopRequireDefault(_fs);
+
+	var _path = __webpack_require__(9);
+
+	var _path2 = _interopRequireDefault(_path);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+		props: {
+			currentSong: {
+				type: String
+			},
+			playList: {
+				type: Array
+			},
+			currentLink: {
+				type: String
+			},
+			singer: {
+				type: String
+			},
+			currentIndex: {
+				type: Number
+			},
+			singerPic: {
+				type: String
+			},
+			loop: {
+				type: Boolean
+			}
+		},
+		data: function data() {
+			return {
+				musicList: [],
+				hide: true,
+				folderList: [],
+				hasMusic: false
+			};
+		},
+		methods: {
+			chooseFolder: function chooseFolder() {
+				this.$els.file.click();
+			},
+			choosed: function choosed(e) {
+				var dirname = e.target.value;
+				if (this.folderList.length > 0) {
+					this.folderList.forEach(function (val) {
+						if (val == dirname) {
+							alert('该目录已存在，请勿重复添加');
+						} else {
+							this.folderList.push(dirname);
+						}
+					}.bind(this));
+				} else {
+					this.folderList.push(dirname);
+				}
+				localStorage.folderList = this.folderList;
+				localStorage.folderList.split(",").forEach(function (val) {
+					console.log(val);
+					this.readFile(val);
+				}.bind(this));
+			},
+			readFile: function readFile(dirname) {
+				var self = this;
+				var dir = _fs2.default.readdirSync(dirname);
+				dir.forEach(function (val) {
+					val = _path2.default.join(dirname, val);
+					_fs2.default.stat(val, function (err, stat) {
+						if (err) {
+							throw err;
+						} else {
+							if (stat.isDirectory()) {
+								self.readFile(val, dir);
+							} else {
+								var ext = _path2.default.extname(val);
+								if (ext == ".mp3" || ext == ".wav" || ext == ".wma" || ext == ".ogg" || ext == ".ape" || ext == ".acc") {
+									var basename = _path2.default.basename(val);
+									var name = basename.split("-")[1].split(".")[0];
+									var singer = basename.split("-")[0];
+									var size = (parseInt(stat.size) / 1024 / 1024).toFixed(1) + "MB";
+									self.hasMusic = true;
+									self.musicList.push({ name: name, singer: singer, link: val, size: size, ep: '未知' });
+								}
+							}
+						}
+					});
+				});
+				this.hide = false;
+			},
+			play: function play(e) {
+				var link = e.target.getAttribute('data-link');
+				var name = e.target.innerHTML;
+				var singer = e.target.getAttribute('data-singer');
+				this.currentSong = name;
+				this.currentLink = link + "?xcode=fsda5f454as4fe";
+				this.singer = singer;
+				this.playList = this.musicList;
+				this.currentIndex = parseInt(e.target.getAttribute('data-index'));
+				this.singerPic = "";
+				this.loop = false;
+			}
+		},
+		compiled: function compiled() {
+			if (localStorage.folderList) {
+				this.folderList = localStorage.folderList.split(",");
+			}
+			if (this.folderList.length == 0) {
+				this.hide = true;
+			} else {
+				this.hide = false;
+				this.folderList.forEach(function (val) {
+					this.readFile(val);
+				}.bind(this));
+			}
+			console.log(process.cwd());
+		}
+	};
+
+/***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	module.exports = require("fs");
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	module.exports = require("path");
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	module.exports = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<div class=\"location\">\n\t<div v-show=\"hide\" >\n\t\t<dl>\n\t\t\t<dd><a v-on:click=\"chooseFolder\" href=\"javascript:;\"><img src=\"/images/folder.png\" alt=\"\"></a></dd>\n\t\t\t<dt>还木有载入本地文件哦！<a v-on:click=\"chooseFolder\" href=\"javascript:;\">点击此处</a> 选择文件夹载入！</dt>\n\t\t</dl>\n\t\t<input type=\"file\" class=\"hide\" v-on:change=\"choosed\" v-el:file nwdirectory >\n\t</div>\n\t<div v-show=\"!hide\">\n\t\t<div class=\"loc-head\">\n\t\t\t<h3>本地音乐</h3>\n\t\t</div>\n\t\t<table class=\"list\">\n\t\t\t<tr>\n\t\t\t\t<th></th>\n\t\t\t\t<th>音乐标题</th>\n\t\t\t\t<th>歌手</th>\n\t\t\t\t<th>专辑</th>\n\t\t\t\t<th>大小</th>\n\t\t\t</tr>\n\t\t\t<tr v-show=\"hasMusic\" v-for=\"(index,val) in musicList\" >\n\t\t\t\t<td v-bind:class='[index == currentIndex ? \"playing\" : \"\"]'>{{index+1}}</td>\n\t\t\t\t<td><a href=\"javascript:;\" v-bind:class='[index == currentIndex ? \"weight\" : \"\"]' data-index=\"{{index}}\" data-link=\"{{val.link}}\" data-singer=\"{{val.singer}}\" v-on:click=\"play\">{{val.name}}</a></td>\n\t\t\t\t<td>{{val.singer}}</td>\n\t\t\t\t<td>{{val.ep}}</td>\n\t\t\t\t<td>{{val.size}}</td>\n\t\t\t</tr>\n\t\t\t<tr v-show=\"!hasMusic\">\n\t\t\t\t<td colspan=\"5\" style=\"text-align:center; font-size:18px;\">该文件夹里木有音乐，请<a v-on:click=\"chooseFolder\" href=\"javascript:;\">点击此处</a>重新选择文件夹！</td>\n\t\t\t</tr>\n\t\t</table>\n\t</div>\n\t\n</div>\n";
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 12 */,
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(14)
+	__vue_script__ = __webpack_require__(16)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] components\\myFavorite.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(17)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./myFavorite.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(15);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(6)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./myFavorite.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./myFavorite.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(5)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	module.exports = "\n\n\n\n\n<h3>我喜欢的音乐</h3>\n";
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(19)
+	__vue_script__ = __webpack_require__(21)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] components\\searchResult.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(22)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./searchResult.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 20 */,
+/* 21 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10607,24 +10849,98 @@
 		value: true
 	});
 	exports.default = {
+		props: {
+			query: {
+				type: String
+			},
+			currentSong: {
+				type: String
+			},
+			currentLink: {
+				type: String
+			},
+			singer: {
+				type: String
+			},
+			singerPic: {
+				type: String
+			},
+			loop: {
+				type: Boolean
+			}
+		},
 		data: function data() {
 			return {
-				text: 'text1whattest'
+				list: [],
+				size: 30,
+				notFounded: false,
+				page: 0,
+				currentIndex: -1
 			};
+		},
+		methods: {
+			search: function search() {
+				var self = this;
+				this.list = [];
+				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.search.common&format=json&query=' + this.query + '&page_size=' + this.size + '&page_no=' + this.page, {
+					method: 'GET'
+				}).then(function (resp) {
+					return resp.json();
+				}).then(function (json) {
+					var resp = json;
+					if (json.song_list) {
+						self.notFounded = false;
+						json.song_list.map(function (val, index) {
+							self.list.push({
+								singer: val.author,
+								name: val.title,
+								ep: val.album_title,
+								songId: val.song_id
+							});
+						});
+					} else {
+						self.notFounded = true;
+					}
+				});
+			},
+			player: function player(e) {
+				var self = this;
+				var id = e.target.getAttribute("data-id");
+				this.currentIndex = e.target.getAttribute("data-index");
+				if (id == undefined) {
+					id = e.target.parentNode.getAttribute("data-id");
+					this.currentIndex = e.target.parentNode.getAttribute("data-index");
+				}
+				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.song.playAAC&songid=' + id, {
+					method: 'GET'
+				}).then(function (resp) {
+					return resp.json();
+				}).then(function (json) {
+					var resp = json;
+					self.currentLink = 'http://localhost:8081/api/?tourl=' + resp.bitrate.file_link;
+					self.currentSong = resp.songinfo.title;
+					self.singer = resp.songinfo.author;
+					self.singerPic = 'http://localhost:8081/api/?tourl=' + resp.songinfo.pic_small;
+					self.loop = true;
+				});
+			}
+		},
+		watch: {
+			query: function query() {
+				this.search();
+				this.currentIndex = -1;
+			}
+		},
+		compiled: function compiled() {
+			this.search();
 		}
 	};
 
 /***/ },
-/* 9 */
+/* 22 */
 /***/ function(module, exports) {
 
-	module.exports = "\n\n\n\n\n<h3 class=\"title\">{{text}}</h3>\n";
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
+	module.exports = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<div class=\"location\">\n\t<div class=\"loc-head\">\n\t\t<h3>搜索结果</h3>\n\t</div>\n\t<table class=\"list\">\n\t\t<tr>\n\t\t\t<th></th>\n\t\t\t<th>操作</th>\n\t\t\t<th>音乐标题</th>\n\t\t\t<th>歌手</th>\n\t\t\t<th>专辑</th>\n\t\t</tr>\n\t\t<tr v-if=\"!notFounded\" v-for=\"(index,val) in list\" >\n\t\t\t<td v-bind:class='[index == currentIndex ? \"playing\" : \"\"]'>{{index+1}}</td>\n\t\t\t<td class=\"w60\" ></td>\n\t\t\t<td class=\"max-long-200\">\n\t\t\t\t<a v-bind:class='[index == currentIndex ? \"weight\" : \"\"]' data-index=\"{{index}}\" data-id=\"{{val.songId}}\" href=\"javascript:;\" v-on:click.stop=\"player\" >{{{val.name}}}</a>\n\t\t\t</td>\n\t\t\t<td class=\"max-long-250\" title=\"{{val.singer}}\">{{{val.singer}}}</td>\n\t\t\t<td class=\"max-long-200\" title=\"{{val.ep}}\">{{{val.ep}}}</td>\n\t\t</tr>\n\t\t<tr v-if=\"notFounded\">\n\t\t\t<td colspan=\"5\">查询无结果或网络不给力，请重试~</td>\n\t\t</tr>\n\t</table>\n</div>\n";
 
 /***/ }
 /******/ ]);

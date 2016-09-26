@@ -3,7 +3,6 @@ import location from './components/location.vue';
 import css from './css/style.scss';
 import myFavorite from './components/myFavorite.vue';
 import search from './components/searchResult.vue';
-//import server from './server.js';
 
 
 var app  = new Vue({
@@ -19,7 +18,9 @@ var app  = new Vue({
 		singer:'',
 		currentIndex:-1,
 		isMax: false,
-		query: ''
+		query: '',
+		singerPic: '',
+		loop: false
 	},
 	methods:{
 		togglePlay: function(){
@@ -94,8 +95,10 @@ var app  = new Vue({
 	},
 	watch: {
 		currentSong: function(){
-			this.$els.audio.play();
 			this.isPlay = true;
+		},
+		loop: function(){
+			this.$els.audio.loop = this.loop;
 		}
 	},
 	components:{
