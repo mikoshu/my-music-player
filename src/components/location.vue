@@ -96,7 +96,6 @@
 					<td colspan="5" style="text-align:center; font-size:18px;">该文件夹里木有音乐，请<a v-on:click="chooseFolder" href="javascript:;">点击此处</a>重新选择文件夹！</td>
 				</tr>
 			</table>
-			<page v-bind:current-page.sync="currentPage" v-bind:total.sync="total" v-bind:page-num.sync="pageNum"  ></page>
 		</div>
 		
 	</div>
@@ -105,7 +104,6 @@
 <script>
 	import fs from 'fs';
 	import path from 'path';
-	import page from './page.vue';
 	export default {
 		props:{
 			currentSong:{
@@ -136,10 +134,6 @@
 				hide: true,
 				folderList: [],
 				hasMusic: false,
-				total: 100,
-				pageNum:30,
-				currentPage: 2,
-				num: 10
 			};
 		},
 		methods:{
@@ -177,8 +171,10 @@
 							if(stat.isDirectory()){
 								self.readFile(val,dir)
 							}else{
+								// https://github.com/leetreveil/musicmetadata
 								var ext = path.extname(val); // 判断文件是否为音频
 								if(ext == ".mp3" || ext == ".wav" || ext == ".wma" || ext == ".ogg" || ext == ".ape" || ext == ".acc"){
+									console.log(stat)
 									var basename = path.basename(val);
 									var name = basename.split("-")[1].split(".")[0];
 									var singer = basename.split("-")[0];
@@ -218,9 +214,6 @@
 				}.bind(this))
 			}
 			console.log( process.cwd() )
-		},
-		components:{
-			'page':page
 		}
 	}
 </script>

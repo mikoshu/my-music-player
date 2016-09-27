@@ -52,7 +52,6 @@
 			<li v-if="showLoop" v-for="index in size-2" v-bind:class="[index+1 == currentPage ? 'active':'']" ><a href="javascript:;" v-on:click="toPage" >{{index+1}}</a></li>
 			<li v-if="showLoop2" v-for="index in pageNo" v-bind:class="[index+1 == currentPage ? 'active':'']" ><a href="javascript:;" v-on:click="toPage" >{{index+1}}</a></li>
 
-			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage-4}}</a></li>
 			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage-3}}</a></li>
 			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage-2}}</a></li>
 			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage-1}}</a></li>
@@ -60,7 +59,6 @@
 			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage+1}}</a></li>
 			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage+2}}</a></li>
 			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage+3}}</a></li>
-			<li v-if="showLoop3"><a href="javascript:;" v-on:click="toPage" >{{currentPage+4}}</a></li>
 			
 			<li v-if="showLoop4" v-bind:class="[pageNo-7 == currentPage ? 'active':'']" ><a href="javascript:;" v-on:click="toPage" >{{pageNo-7}}</a></li>
 			<li v-if="showLoop4" v-bind:class="[pageNo-6 == currentPage ? 'active':'']" ><a href="javascript:;" v-on:click="toPage" >{{pageNo-6}}</a></li>
@@ -72,7 +70,7 @@
 
 
 			<li v-if="showLastDots"> <a href="javascript:;">...</a> </li>
-			<li v-if="showLast"><a href="javascript:;" v-on:click="toPage" >{{pageNo}}</a></li>
+			<li v-if="showLast" v-bind:class="[pageNo == currentPage ? 'active':'']"><a href="javascript:;" v-on:click="toPage" >{{pageNo}}</a></li>
 			<li><a href="javascript:;" v-on:click="next">下一页</a></li>
 		</ul>
 	</div>

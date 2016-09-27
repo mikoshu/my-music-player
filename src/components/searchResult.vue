@@ -13,6 +13,16 @@
 	}
 	.w60{
 		width:60px;
+		text-align:center;
+		img{
+			height:13px;
+		}
+	}
+	.download{
+		opacity:.5;
+		&:hover{
+			opacity:1;
+		}
 	}
 	.location{
 		.list{
@@ -41,7 +51,9 @@
 			</tr>
 			<tr v-if="!notFounded" v-for="(index,val) in list" >
 				<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{((page-1)*size)+index+1}}</td>
-				<td class="w60" ></td>
+				<td class="w60" >
+					<a href="javascript:;" class="download" ><img v-on:click="download" data-id="{{val.songId}}" src="/images/icon-download.png"></a>
+				</td>
 				<td class="max-long-200">
 					<a v-bind:class='[index == currentIndex ? "weight" : ""]' data-index="{{index}}" data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
 				</td>
@@ -134,6 +146,24 @@
 					self.singer = resp.songinfo.author;
 					self.singerPic = 'http://localhost:8081/api/?tourl='+resp.songinfo.pic_small;
 					self.loop = true;
+				})
+			},
+			download: function(e){
+				var self = this;
+				var id = e.target.getAttribute("data-id");
+				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.downWeb&songid='+id+'&bit=128',{
+					method: 'GET'
+				}).then(function(resp){
+					return resp.json();
+				}).then(function(json){
+					var resp = json;
+					console.log(resp.bitrate[0].file_link)
+					if(resp.bitrate[0].file_link){
+						window.location.href = 'http://localhost:8081/api/?tourl='+resp.bitrate[0].file_link
+					}else{
+						alert("无法下载该歌曲")
+					}
+					//window.location.href = 'http://localhost:8081/api/?tourl='+resp.bitrate[0].file_link
 				})
 			}
 		},
