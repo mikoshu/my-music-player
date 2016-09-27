@@ -23,6 +23,7 @@
 		}
 		
 	}
+	
 </style>
 
 <template>
@@ -39,7 +40,7 @@
 				<th>专辑</th>
 			</tr>
 			<tr v-if="!notFounded" v-for="(index,val) in list" >
-				<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{index+1}}</td>
+				<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{((page-1)*size)+index+1}}</td>
 				<td class="w60" ></td>
 				<td class="max-long-200">
 					<a v-bind:class='[index == currentIndex ? "weight" : ""]' data-index="{{index}}" data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
@@ -51,10 +52,12 @@
 				<td colspan="5">查询无结果或网络不给力，请重试~</td>
 			</tr>
 		</table>
+		<my-page v-bind:current-page.sync="page" v-bind:total.sync="total" v-bind:page-num.sync="size"  ></my-page>
 	</div>
 </template>
 
 <script>
+	import pagination from './page.vue';
 	export default {
 		props:{
 			query:{
@@ -81,8 +84,9 @@
 				list:[],
 				size: 30,
 				notFounded: false,
-				page:0,
-				currentIndex: -1
+				page:1,
+				currentIndex: -1,
+				total: 0
 			}
 		},
 		methods:{
@@ -95,6 +99,7 @@
 					return resp.json();
 				}).then(function(json){
 					var resp = json;
+					self.total = parseInt(json.pages.total);
 					if(json.song_list){
 						self.notFounded = false;
 						json.song_list.map(function(val,index){
@@ -132,10 +137,16 @@
 				})
 			}
 		},
+		components:{
+			"my-page": pagination
+		},
 		watch:{
 			query: function(){
 				this.search();
 				this.currentIndex = -1;
+			},
+			page: function(){
+				this.search()
 			}
 		},
 		compiled: function(){
