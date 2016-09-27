@@ -13,7 +13,7 @@
 	}
 	.w60{
 		width:60px;
-		text-align:center;
+		
 		img{
 			height:13px;
 		}
@@ -52,7 +52,7 @@
 			<tr v-if="!notFounded" v-for="(index,val) in list" >
 				<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{((page-1)*size)+index+1}}</td>
 				<td class="w60" >
-					<a href="javascript:;" class="download" ><img v-on:click="download" data-id="{{val.songId}}" src="/images/icon-download.png"></a>
+					<a href="javascript:;" class="download" ><img v-on:click="download" data-id="{{val.songId}}" src="http://demo.mikoshu.me/player/icon-download.png"></a>
 				</td>
 				<td class="max-long-200">
 					<a v-bind:class='[index == currentIndex ? "weight" : ""]' data-index="{{index}}" data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
@@ -118,7 +118,7 @@
 							self.list.push({
 								singer: val.author,
 								name: val.title,
-								ep: val.album_title,
+								ep: val.album_title == ''? '未知':val.album_title,
 								songId : val.song_id
 							})
 						})
@@ -151,15 +151,15 @@
 			download: function(e){
 				var self = this;
 				var id = e.target.getAttribute("data-id");
-				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.song.downWeb&songid='+id+'&bit=128',{
+				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.song.playAAC&songid='+id,{
 					method: 'GET'
 				}).then(function(resp){
 					return resp.json();
 				}).then(function(json){
 					var resp = json;
-					console.log(resp.bitrate[0].file_link)
-					if(resp.bitrate[0].file_link){
-						window.location.href = 'http://localhost:8081/api/?tourl='+resp.bitrate[0].file_link
+					//console.log(resp.bitrate.file_link)
+					if(resp.bitrate.file_link){
+						window.location.href = 'http://localhost:8081/api/?tourl='+resp.bitrate.file_link
 					}else{
 						alert("无法下载该歌曲")
 					}
