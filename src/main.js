@@ -20,7 +20,10 @@ var app  = new Vue({
 		isMax: false,
 		query: '',
 		singerPic: '',
-		loop: false
+		loop: false,
+		idList: [],
+		idIndex: 0,
+		songId: ''
 	},
 	methods:{
 		togglePlay: function(){
@@ -37,28 +40,83 @@ var app  = new Vue({
 			}
 		},
 		pre: function(){
-			var index = parseInt(this.currentIndex);
-			if(index > 0){
-				index -- ;
-				this.currentIndex = index;
-				this.currentSong = this.playList[index].name;
-				this.currentLink = this.playList[index].link;
-				this.singer = this.playList[index].singer;
+			var self = this;
+			if(!!~this.idIndex ){
+				if(this.idIndex > 0){
+					this.idIndex -- ;
+					var id = this.idList[this.idIndex];
+					fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.song.playAAC&songid='+id,{
+						method: 'GET'
+					}).then(function(resp){
+						return resp.json();
+					}).then(function(json){
+						var resp = json;
+						if(resp.error_code == '22000'){
+							self.currentLink = 'http://localhost:8081/api/?tourl='+resp.bitrate.file_link;
+							self.songId = resp.songinfo.song_id;
+							self.currentSong = resp.songinfo.title;
+							self.singer = resp.songinfo.author;
+							self.singerPic = 'http://localhost:8081/api/?tourl='+resp.songinfo.pic_small;
+						}else{
+							alert("网络错误！")
+						}
+						
+					})
+				}else{
+					alert("已经是第一首歌了哦~~")
+				}
 			}else{
-				alert("已经是第一首歌了哦~~")
+				var index = parseInt(this.currentIndex);
+				if(index > 0){
+					index -- ;
+					this.currentIndex = index;
+					this.currentSong = this.playList[index].name;
+					this.currentLink = this.playList[index].link;
+					this.singer = this.playList[index].singer;
+				}else{
+					alert("已经是第一首歌了哦~~")
+				}
 			}
 		},
 		next: function(){
-			var index = parseInt(this.currentIndex);
-			var len = this.playList.length - 1;
-			if(index < len){
-				index ++ ;
-				this.currentIndex = index;
-				this.currentSong = this.playList[index].name;
-				this.currentLink = this.playList[index].link;
-				this.singer = this.playList[index].singer;
+			var self = this;
+			if(!!~this.idIndex ){
+				var len = this.idList.length - 1;
+				if(this.idIndex < len){
+					this.idIndex ++ ;
+					var id = this.idList[this.idIndex];
+					fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.song.playAAC&songid='+id,{
+						method: 'GET'
+					}).then(function(resp){
+						return resp.json();
+					}).then(function(json){
+						var resp = json;
+						if(resp.error_code == '22000'){
+							self.currentLink = 'http://localhost:8081/api/?tourl='+resp.bitrate.file_link;
+							self.songId = resp.songinfo.song_id;
+							self.currentSong = resp.songinfo.title;
+							self.singer = resp.songinfo.author;
+							self.singerPic = 'http://localhost:8081/api/?tourl='+resp.songinfo.pic_small;
+						}else{
+							alert("网络错误！")
+						}
+						
+					})
+				}else{
+					alert("已经是最后首歌了哦~~")
+				}
 			}else{
-				alert("已经是最后首歌了哦~~")
+				var index = parseInt(this.currentIndex);
+				var len = this.playList.length - 1;
+				if(index < len){
+					index ++ ;
+					this.currentIndex = index;
+					this.currentSong = this.playList[index].name;
+					this.currentLink = this.playList[index].link;
+					this.singer = this.playList[index].singer;
+				}else{
+					alert("已经是最后首歌了哦~~")
+				}
 			}
 		},
 		minimize: function(){

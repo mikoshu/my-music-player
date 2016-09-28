@@ -92,10 +92,83 @@
 			}
 		}
 	}
+.pop{
+	position:fixed;
+	padding:20px 30px 40px;
+	left:50%;
+	top:50%;
+	width:500px;
+	max-height:300px;
+	transform:translate(-50%,-50%);
+	background:#fff;
+	border-radius:10px;
+	border:1px solid #eee;
+	overflow: auto;
+	.pop-close{
+		position:absolute;
+		right:5px;
+		top:5px;
+		width:18px;
+		height:18px;
+		color:#999;
+		font-size:18px;
+		&:hover{
+			color:#000;
+		}
+	}
+	.pop-content{
+		font-size:14px;
+		color:#666;
+		line-height: 25px;
+		ul{
+
+			li{
+				padding:0 10px;
+				font-size:12px;
+				color:#999;
+				border-bottom:1px dashed #999 ;
+				span{
+					float:left;
+					display: block;
+					max-width:370px;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow:ellipsis;
+				}
+			}
+			li:last-child{
+				border:none;
+			}
+		}
+		.add-more{
+			position: absolute;
+			right:30px;
+			bottom:8px;
+
+			font-size:12px;
+			float: right;
+		}
+
+	}
+}
+
 </style>
 
 <template>
 	<div class="location">
+		<div v-if="popOpen" transition="fade" transition-mode="out-in" class="pop">
+			<a href="javascript:;" class="pop-close" v-on:click="closePop" >X</a>
+			<div class="pop-content">
+				<p>当前文件加载目录为：</p>
+				<ul>
+					<li v-for="(index,val) in folderList" class="clearfix" >
+						<span>{{val}}</span>
+						<a href="#" v-on:click="removeFolder" data-index="{{index}}" class="fr">移除</a>
+					</li>
+				</ul>
+				<a href="#" class="add-more" v-on:click="chooseFolder" >继续添加目录</a>
+			</div>
+		</div>
 		<div v-show="hide" >
 			<dl>
 				<dd><a v-on:click="chooseFolder" href="javascript:;"><img src="http://demo.mikoshu.me/player/folder.png" alt=""></a></dd>
@@ -106,7 +179,7 @@
 		<div v-show="!hide">
 			<div class="loc-head">
 				<h3>本地音乐</h3>
-				<a class="add-folder" v-on:click="chooseFolder" href="javascript:;"><img src="http://demo.mikoshu.me/player/folder.png" title="管理文件夹" width="20" alt=""></a>
+				<a class="add-folder" v-on:click="openPop" href="javascript:;"><img src="http://demo.mikoshu.me/player/folder.png" title="管理文件夹" width="20" alt=""></a>
 			</div>
 			<table class="list">
 				<tr>
@@ -126,7 +199,7 @@
 					<td>{{val.size}}</td>
 				</tr>
 				<tr v-show="!hasMusic">
-					<td colspan="5" style="text-align:center; font-size:18px;">该文件夹里木有音乐，请<a v-on:click="chooseFolder" href="javascript:;">点击此处</a>重新选择文件夹！</td>
+					<td colspan="6" style="text-align:center; font-size:18px;">该文件夹里木有音乐，请<a v-on:click="chooseFolder" href="javascript:;">点击此处</a>重新选择文件夹！</td>
 				</tr>
 			</table>
 		</div>
@@ -161,6 +234,12 @@
 			},
 			loop:{
 				type: Boolean
+			},
+			idIndex:{
+				type: Number
+			},
+			songId:{
+				type: String
 			}
 		},
 		data: function(){
@@ -169,35 +248,49 @@
 				hide: true,
 				folderList: [],
 				hasMusic: false,
-				hasSrc: false
+				hasSrc: false,
+				popOpen: false
 			};
 		},
 		methods:{
 			chooseFolder: function(){
 				this.$els.file.click()
 			},
-			choosed: function(e){
+			choosed: function(e){ // 选择文件夹
 				var dirname = e.target.value;
-				if(this.folderList.length > 0){
-					this.hasSrc = false;
-					this.folderList.forEach(function(val){
-						if(val == dirname){
-							alert('该目录已存在，请勿重复添加');
-							e.target.value = "";
-							this.hasSrc = true;
+				if(dirname != ''){
+					if(this.folderList.length > 0){
+						this.hasSrc = false;
+						this.folderList.forEach(function(val){
+							if(val == dirname){
+								alert('该目录已存在，请勿重复添加');
+								e.target.value = "";
+								this.hasSrc = true;
+							}
+						}.bind(this))
+						if(!this.hasSrc){
+							this.folderList.push(dirname);
 						}
-					}.bind(this))
-					if(!this.hasSrc){
+					}else{
 						this.folderList.push(dirname);
 					}
-				}else{
-					this.folderList.push(dirname);
 				}
+				
+				e.target.value = '';
+				
+				this.readList();
+			},
+			readList: function(){ // 读取localstorage 文件夹数组
 				localStorage.folderList = this.folderList;
-				localStorage.folderList.split(",").forEach(function(val){
-					this.musicList = [];
-					this.readFile(val);
-				}.bind(this))
+				if(localStorage.folderList != ''){
+					localStorage.folderList.split(",").forEach(function(val){
+						this.musicList = [];
+						this.readFile(val);
+					}.bind(this))
+				}else{
+					this.hide = true;
+				}
+				
 			},
 			readFile: function(dirname){ // 读取路径并且递归文件夹
 				var self = this;
@@ -236,28 +329,42 @@
 				})
 				this.hide = false;
 			},
-			play: function(e){
+			play: function(e){ // 播放
 				var link = e.target.getAttribute('data-link');
 				var name = e.target.innerHTML;
 				var singer = e.target.getAttribute('data-singer');
 				this.currentSong = name;
-				this.currentLink = link+"?xcode=fsda5f454as4fe";
+				this.currentLink = link;
 				this.singer = singer;
 				this.playList = this.musicList;
 				this.currentIndex = parseInt(e.target.getAttribute('data-index'));
 				this.singerPic = "";
 				this.loop = false;
+				this.idIndex = -1;
+				this.songId = "";
+			},
+			openPop: function(){ // 打开弹窗
+				this.popOpen = true;
+			},
+			removeFolder: function(e){ // 删除文件夹路径
+				var index = e.target.getAttribute("data-index");
+				this.folderList.splice(index,1);
+				localStorage.folderList = this.folderList;
+			},
+			closePop: function(){// 关闭弹窗
+				this.popOpen = false;
+				setTimeout(function(){this.readList();}.bind(this),500);
 			}
 		},
 		compiled: function(){
-			if(localStorage.folderList){
+			if(localStorage.folderList){ // 读取文件列表
 				this.folderList = localStorage.folderList.split(",");
 			}
 			if(this.folderList.length == 0){
 				this.hide = true;
 			}else{
 				this.hide = false;
-				this.folderList.forEach(function(val){
+				this.folderList.forEach(function(val){ //遍历文件夹读取音频文件
 					this.readFile(val)
 				}.bind(this))
 			}

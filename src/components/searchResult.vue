@@ -12,7 +12,7 @@
 		text-overflow:ellipsis;
 	}
 	.w60{
-		width:60px;
+		width:70px;
 		
 		img{
 			height:13px;
@@ -30,6 +30,25 @@
 				color:red;
 				font-style: normal;
 			}
+		}
+		.heart{
+			display:inline-block;
+			margin-right:10px;
+			vertical-align: -2px;
+			width:14px;
+			height:14px;
+			background:url(http://demo.mikoshu.me/player/icon-heart.png) no-repeat;
+			background-size: 100% 100%;
+			opacity:.6;
+		}
+		.heart-a{
+			display:inline-block;
+			margin-right:10px;
+			vertical-align: -2px;
+			width:14px;
+			height:14px;
+			background:url(http://demo.mikoshu.me/player/icon-heart-a.png) no-repeat;
+			background-size: 100% 100%;
 		}
 		
 	}
@@ -50,18 +69,19 @@
 				<th>专辑</th>
 			</tr>
 			<tr v-if="!notFounded" v-for="(index,val) in list" >
-				<td v-bind:class='[index == currentIndex ? "playing" : ""]'>{{((page-1)*size)+index+1}}</td>
+				<td v-bind:class='[index == currentIndex2 ? "playing" : ""]'>{{((page-1)*size)+index+1}}</td>
 				<td class="w60" >
+					<a href="#" v-bind:class="[favorite[val.songId] ? 'heart-a' : 'heart' ]" data-id="{{val.songId}}" data-index="{{index}}" v-on:click="addFavorite" ></a>
 					<a href="javascript:;" class="download" ><img v-on:click="download" data-id="{{val.songId}}" src="http://demo.mikoshu.me/player/icon-download.png"></a>
 				</td>
 				<td class="max-long-200">
-					<a v-bind:class='[index == currentIndex ? "weight" : ""]' data-index="{{index}}" data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
+					<a v-bind:class='[index == currentIndex2 ? "weight" : ""]' data-index="{{index}}" data-id="{{val.songId}}" href="javascript:;" v-on:click.stop="player" >{{{val.name}}}</a>
 				</td>
 				<td class="max-long-250" title="{{val.singer}}">{{{val.singer}}}</td>
 				<td class="max-long-200" title="{{val.ep}}">{{{val.ep}}}</td>
 			</tr>
 			<tr v-if="notFounded">
-				<td colspan="5">查询无结果或网络不给力，请重试~</td>
+				<td colspan="5" style="text-align:center;">查询无结果或网络不给力，请重试~</td>
 			</tr>
 		</table>
 		<my-page v-bind:current-page.sync="page" v-bind:total.sync="total" v-bind:page-num.sync="size"  ></my-page>
@@ -81,6 +101,9 @@
 			currentLink:{
 				type: String
 			},
+			currentIndex:{
+				type: Number
+			},
 			singer:{
 				type: String
 			},
@@ -97,8 +120,9 @@
 				size: 30,
 				notFounded: false,
 				page:1,
-				currentIndex: -1,
-				total: 0
+				currentIndex2: -1,
+				total: 0,
+				favorite:{}
 			}
 		},
 		methods:{
@@ -130,10 +154,11 @@
 			player: function(e){
 				var self = this;
 				var id = e.target.getAttribute("data-id");
-				this.currentIndex = e.target.getAttribute("data-index");
+				this.currentIndex2 = e.target.getAttribute("data-index");
+				this.currentIndex = -1;
 				if(id == undefined){
 					id = e.target.parentNode.getAttribute("data-id")
-					this.currentIndex = e.target.parentNode.getAttribute("data-index");
+					this.currentIndex2 = e.target.parentNode.getAttribute("data-index");
 				}
 				fetch('http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.song.playAAC&songid='+id,{
 					method: 'GET'
@@ -163,8 +188,17 @@
 					}else{
 						alert("无法下载该歌曲")
 					}
-					//window.location.href = 'http://localhost:8081/api/?tourl='+resp.bitrate[0].file_link
 				})
+			},
+			addFavorite: function(e){
+				var className = e.target.getAttribute('class');
+				if(className == 'heart'){
+					var id = e.target.getAttribute('data-id');
+					var index = e.target.getAttribute('data-index');
+					e.target.setAttribute('class','heart-a');
+					this.favorite[id] = this.list[index];
+					localStorage.favorite = JSON.stringify(this.favorite);
+				}
 			}
 		},
 		components:{
@@ -173,14 +207,17 @@
 		watch:{
 			query: function(){
 				this.search();
-				this.currentIndex = -1;
+				this.currentIndex2 = -1;
 			},
 			page: function(){
 				this.search()
 			}
 		},
 		compiled: function(){
-			this.search()
+			this.search();
+			if(localStorage.favorite){
+				this.favorite = JSON.parse(localStorage.favorite);
+			}
 		}
 	}
 </script>

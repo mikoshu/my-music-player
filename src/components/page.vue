@@ -16,6 +16,7 @@
 			float:left;
 			border:1px solid #ccc;
 			margin-left:-1px;
+			transition:all .5s;
 			&:hover{
 				border-color:#c62f2f;
 				a{
@@ -29,6 +30,7 @@
 				padding:0 10px;
 				font-size:12px;
 				color:#666;
+				transition:all .5s;
 			}
 		}
 		.active{
@@ -107,13 +109,11 @@
 			toPage: function(e){
 				var no = parseInt(e.target.innerHTML);
 				this.currentPage = no;
-				console.log(this.currentPage)
 			},
 			pre: function(){
 				if(this.currentPage > 1){
 					this.currentPage -= 1
 				}
-				console.log(this.total,this.pageNum,this.pageNo)
 			},
 			next: function(){
 				if(this.currentPage < this.pageNo){
@@ -122,7 +122,6 @@
 			},
 			init: function(){
 				this.pageNo = Math.ceil(this.total/this.pageNum);
-				console.log(this.pageNo)
 				if(this.pageNo < this.size){
 					this.showFirst = false;
 					this.showLoop = false;
@@ -133,7 +132,6 @@
 					this.showLoop3 = false;
 					this.showLoop4 = false;
 				}else if(this.pageNo > this.size){
-					console.log(this.pageNo)
 					this.showFirst = false;
 					this.showLoop = true;
 					this.showLastDots = true;
